@@ -9,13 +9,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.util.StateSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -235,7 +239,15 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
         TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
         tv_tab_title.setText(mTabEntitys.get(position).getTabTitle());
         ImageView iv_tab_icon = (ImageView) tabView.findViewById(R.id.iv_tab_icon);
-        iv_tab_icon.setImageResource(mTabEntitys.get(position).getTabUnselectedIcon());
+
+        int unSelectedRes = mTabEntitys.get(position).getTabUnselectedIcon();
+        int selectedRes = mTabEntitys.get(position).getTabSelectedIcon();
+        StateListDrawable stateListDrawable = new StateListDrawable();
+        stateListDrawable.addState(new int[] { android.R.attr.state_selected },
+                                   ContextCompat.getDrawable(getContext(), selectedRes));
+        stateListDrawable.addState(StateSet.WILD_CARD,
+                                   ContextCompat.getDrawable(getContext(), unSelectedRes));
+        iv_tab_icon.setImageDrawable(stateListDrawable);
 
         tabView.setOnClickListener(new OnClickListener() {
             @Override
@@ -286,7 +298,7 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
             if (mIconVisible) {
                 iv_tab_icon.setVisibility(View.VISIBLE);
                 CustomTabEntity tabEntity = mTabEntitys.get(i);
-                iv_tab_icon.setImageResource(i == mCurrentTab ? tabEntity.getTabSelectedIcon() : tabEntity.getTabUnselectedIcon());
+                iv_tab_icon.setSelected(i == mCurrentTab);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         mIconWidth <= 0 ? LinearLayout.LayoutParams.WRAP_CONTENT : (int) mIconWidth,
                         mIconHeight <= 0 ? LinearLayout.LayoutParams.WRAP_CONTENT : (int) mIconHeight);
