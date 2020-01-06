@@ -3,6 +3,7 @@ package com.flyco.tablayout;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -238,6 +239,17 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
     private void addTab(final int position, View tabView) {
         TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
         tv_tab_title.setText(mTabEntitys.get(position).getTabTitle());
+        int[][] states = new int[][] {
+                new int[] { android.R.attr.state_selected}, // selected
+                new int[] {-android.R.attr.state_selected}, // unselected d
+        };
+        int[] colors = new int[] {
+                mTextSelectColor,
+                mTextUnselectColor,
+        };
+        ColorStateList colorStateList = new ColorStateList(states, colors);
+        tv_tab_title.setTextColor(colorStateList);
+
         ImageView iv_tab_icon = (ImageView) tabView.findViewById(R.id.iv_tab_icon);
 
         int unSelectedRes = mTabEntitys.get(position).getTabUnselectedIcon();
@@ -281,7 +293,7 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
             View tabView = mTabsContainer.getChildAt(i);
             tabView.setPadding((int) mTabPadding, 0, (int) mTabPadding, 0);
             TextView tv_tab_title = (TextView) tabView.findViewById(R.id.tv_tab_title);
-            tv_tab_title.setTextColor(i == mCurrentTab ? mTextSelectColor : mTextUnselectColor);
+            tv_tab_title.setSelected(i == mCurrentTab);
             tv_tab_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextsize);
 //            tv_tab_title.setPadding((int) mTabPadding, 0, (int) mTabPadding, 0);
             if (mTextAllCaps) {
